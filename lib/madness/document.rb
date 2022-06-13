@@ -56,7 +56,9 @@ module Madness
       @dir  = base
       @type = :readme
 
-      if File.exist? "#{base}/index.md"
+      if File.exist? "#{base}/_index.md"
+        @file = "#{base}/_index.md"
+      elsif File.exist? "#{base}/index.md"
         @file = "#{base}/index.md"
       elsif File.exist? "#{base}/README.md"
         @file = "#{base}/README.md"
@@ -83,7 +85,32 @@ module Madness
       add_anchor_ids
       html = doc.to_html :UNSAFE
       html = syntax_highlight(html) if config.highlighter
+      html = replace_special_entities(html)
       html
+    end
+
+    def replace_special_entities(html)
+      html
+        .gsub("--&gt;",    "&#10230;")
+        .gsub("==&gt;",    "&#10233;")
+        .gsub("&lt;-&gt;", "&harr;")
+        .gsub("&lt;=&gt;", "&#8660;")
+        .gsub("-&gt;",     "&rarr;")
+        .gsub("=&gt;",     "&rArr;")
+        .gsub("---",       "&mdash;")
+        .gsub("--",        "&ndash;")
+        .gsub("[ ]",       "<span style=\"color:DarkSlateGray\">&#x2610;</span>")
+        .gsub(":todo:",    "<span style=\"color:DarkSlateGray\">&#x2610;</span>")
+        .gsub(":TODO:",    "<span style=\"color:DarkSlateGray\">&#x2610;</span>")
+        .gsub("[x]",       "<span style=\"color:ForestGreen\">&#x2611;</span>")
+        .gsub(":done:",    "<span style=\"color:ForestGreen\">&#x2611;</span>")
+        .gsub(":DONE:",    "<span style=\"color:ForestGreen\">&#x2611;</span>")
+        .gsub(":cancel:",  "<span style=\"color:Silver\">&#9746;</span>")
+        .gsub(":CANCEL:",  "<span style=\"color:Silver\">&#9746;</span>")
+        .gsub(":pass:",    "<span style=\"color:LimeGreen\">&#x2714;</span>")
+        .gsub(":fail:",    "<span style=\"color:Crimson\">&#x2716;</span>")
+        .gsub(":smile:",   "&#x263A;")
+        .gsub("/!\\",      "<span style=\"color:Orange\">&#x26A0;</span>")
     end
 
     # Add anchors with IDs before all headers
@@ -93,7 +120,7 @@ module Madness
           anchor = CommonMarker::Node.new(:inline_html)
 
           next unless node.first_child.type == :text
-          
+
           anchor_id = node.first_child.string_content.to_slug
           anchor.string_content = "<a id='#{anchor_id}'></a>"
           node.prepend_child anchor

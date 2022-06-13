@@ -27,7 +27,7 @@ module Madness
         found = 0
         words.each { |word| found += 1 if content.include? word }
         next unless found == word_count
-        result[label] = url 
+        result[label] = url
       end
 
       result
@@ -49,7 +49,7 @@ module Madness
     end
 
     # We are going to avoid indexing of README.md when there is also an
-    # index.md in the same directory, to keep behavior consistent with the 
+    # index.md in the same directory, to keep behavior consistent with the
     # display logic
     def skip_index?(file)
       if file.end_with? 'README.md'
@@ -62,7 +62,7 @@ module Madness
 
     def file_label(filename)
       filename
-        .remove(/\/(index|README)$/)
+        .remove(/\/(_index|index|README)$/)
         .split('/')
         .map { |i| i.to_label }
         .join(' / ')
@@ -73,7 +73,7 @@ module Madness
     end
 
     def file_url(filename)
-      filename.remove(/\/(index|README)$/)
+      filename.remove(/\/(_index|index|README)$/)
     end
   end
 end

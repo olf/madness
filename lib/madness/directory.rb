@@ -9,7 +9,7 @@ module Madness
     def initialize(dir)
       @dir = dir
     end
-    
+
     def list
       @list ||= (dirs + files)
     end
@@ -18,9 +18,9 @@ module Madness
 
     def files
       result = Dir["#{dir}/#{config.dir_glob}"]
-      result.reject! do |f| 
+      result.reject! do |f|
         basename = File.basename(f)
-        basename == 'README.md' or basename == 'index.md'
+        basename == 'README.md' or basename == 'index.md' or basename == '_index.md'
       end
       result.nat_sort.map { |path| Item.new path, :file }
     end
