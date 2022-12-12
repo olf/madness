@@ -5,7 +5,7 @@ module Madness
     include ServerHelper
     using StringRefinements
 
-    def initialize(path=nil)
+    def initialize(path = nil)
       @path = path || docroot
     end
 
@@ -27,6 +27,7 @@ module Madness
         found = 0
         words.each { |word| found += 1 if content.include? word }
         next unless found == word_count
+
         result[label] = url
       end
 
@@ -40,6 +41,7 @@ module Madness
 
       Dir["#{@path}/**/#{config.dir_glob}"].sort.each do |file|
         next if skip_index? file
+
         filename = file_url(file.sub("#{@path}/", '')).downcase
         index_content = File.extname(file) == '.md'
         content = index_content ? File.read(file).downcase : ''
@@ -62,9 +64,9 @@ module Madness
 
     def file_label(filename)
       filename
-        .remove(/\/(_index|index|README)$/)
+        .remove(%r{/(_index|index|README)$})
         .split('/')
-        .map { |i| i.to_label }
+        .map(&:to_label)
         .join(' / ')
     end
 
@@ -73,7 +75,7 @@ module Madness
     end
 
     def file_url(filename)
-      filename.remove(/\/(_index|index|README)$/)
+      filename.remove(%r{/(_index|index|README)$})
     end
   end
 end
