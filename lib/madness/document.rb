@@ -89,32 +89,42 @@ module Madness
       prepend_h1 if config.auto_h1
       add_anchor_ids
       html = doc.to_html :UNSAFE
+      #html = replace_special_entities(html)
+      html = mermaid(html)
       html = syntax_highlight(html) if config.highlighter
-      html = replace_special_entities(html)
       html
     end
 
     def replace_special_entities(html)
+      # pres = Hash.new
+      # id = 0
+
+      # html.gsub(/\<pre\>(.+?)\<\/pre\>/m) do
+      #   pres["#{id}"] = $1
+      #   id += 1
+      #   "PREID#{id}"
+      # end
+
       html
-        .gsub("--&gt;",    "&#10230;")
-        .gsub("==&gt;",    "&#10233;")
-        .gsub("&lt;-&gt;", "&harr;")
-        .gsub("&lt;=&gt;", "&#8660;")
-        .gsub("-&gt;",     "&rarr;")
-        .gsub("=&gt;",     "&rArr;")
-        .gsub("---",       "&mdash;")
-        .gsub("[ ]",       "<span style=\"color:DarkSlateGray;font-size:1.7em;line-height:0.5em\">&#x2610;</span>")
-        .gsub(":todo:",    "<span style=\"color:DarkSlateGray;font-size:1.7em;line-height:0.5em\">&#x2610;</span>")
-        .gsub(":TODO:",    "<span style=\"color:DarkSlateGray;font-size:1.7em;line-height:0.5em\">&#x2610;</span>")
-        .gsub("[x]",       "<span style=\"color:ForestGreen;font-size:1.7em;line-height:0.5em\">&#x2611;</span>")
-        .gsub(":done:",    "<span style=\"color:ForestGreen;font-size:1.7em;line-height:0.5em\">&#x2611;</span>")
-        .gsub(":DONE:",    "<span style=\"color:ForestGreen;font-size:1.7em;line-height:0.5em\">&#x2611;</span>")
-        .gsub(":cancel:",  "<span style=\"color:Silver;font-size:1.7em;line-height:0.5em\">&#9746;</span>")
-        .gsub(":CANCEL:",  "<span style=\"color:Silver;font-size:1.7em;line-height:0.5em\">&#9746;</span>")
-        .gsub(":pass:",    "<span style=\"color:LimeGreen\">&#x2714;</span>")
-        .gsub(":fail:",    "<span style=\"color:Crimson\">&#x2716;</span>")
-        .gsub(":smile:",   "&#x263A;")
-        .gsub("/!\\",      "<span style=\"color:Orange\">&#x26A0;</span>")
+      .gsub("--&gt;",    "&#10230;")
+      .gsub("==&gt;",    "&#10233;")
+      .gsub("&lt;-&gt;", "&harr;")
+      .gsub("&lt;=&gt;", "&#8660;")
+      .gsub("-&gt;",     "&rarr;")
+      .gsub("=&gt;",     "&rArr;")
+      .gsub("---",       "&mdash;")
+      .gsub("[ ]",       "<span style=\"color:DarkSlateGray;font-size:1.7em;line-height:0.5em\">&#x2610;</span>")
+      .gsub(":todo:",    "<span style=\"color:DarkSlateGray;font-size:1.7em;line-height:0.5em\">&#x2610;</span>")
+      .gsub(":TODO:",    "<span style=\"color:DarkSlateGray;font-size:1.7em;line-height:0.5em\">&#x2610;</span>")
+      .gsub("[x]",       "<span style=\"color:ForestGreen;font-size:1.7em;line-height:0.5em\">&#x2611;</span>")
+      .gsub(":done:",    "<span style=\"color:ForestGreen;font-size:1.7em;line-height:0.5em\">&#x2611;</span>")
+      .gsub(":DONE:",    "<span style=\"color:ForestGreen;font-size:1.7em;line-height:0.5em\">&#x2611;</span>")
+      .gsub(":cancel:",  "<span style=\"color:Silver;font-size:1.7em;line-height:0.5em\">&#9746;</span>")
+      .gsub(":CANCEL:",  "<span style=\"color:Silver;font-size:1.7em;line-height:0.5em\">&#9746;</span>")
+      .gsub(":pass:",    "<span style=\"color:LimeGreen\">&#x2714;</span>")
+      .gsub(":fail:",    "<span style=\"color:Crimson\">&#x2716;</span>")
+      .gsub(":smile:",   "&#x263A;")
+      .gsub("/!\\",      "<span style=\"color:Orange\">&#x26A0;</span>")
     end
 
     # Add anchors with IDs before all headers
@@ -192,6 +202,13 @@ module Madness
         code = $2
         code = CGI.unescapeHTML code
         CodeRay.scan(code, lang).html opts
+      end
+    end
+
+    def mermaid(html)
+      html.gsub(/\<code class="language-mermaid"\>(.+?)\<\/code\>/m) do
+        code = $1
+        "<div class=\"mermaid\">#{code}</div>"
       end
     end
 
